@@ -267,13 +267,13 @@ public class SeedEditor : Editor
         pathsSaved.paths.Add(path);
 
         //if(lastObject != null)
-        //    distance = GetDistancePosition(lastObject, direction);
+        //distance = GetDistancePosition(lastObject, direction);
 
-        path.transform.position = new Vector3(0,0, _target.transform.position.z + path.GetComponent<Renderer>().bounds.size.z / 2);
+        path.transform.position = GetDistancePosition(path, direction);//new Vector3(0,0, _target.transform.position.z + path.GetComponent<Renderer>().bounds.size.z / 2);
         //path.gameObject.AddComponent<Path>();
-        _target.transform.position = path.transform.position + new Vector3(0, 0, path.GetComponent<Renderer>().bounds.size.z / 2);
+        _target.transform.position = path.transform.position + GetDistancePosition2(path, direction);//new Vector3(0, 0, path.GetComponent<Renderer>().bounds.size.z / 2);
         //Selection.activeObject = path;
-        
+
 
         //foreach (var item in tilesManager.nodes)
         //{
@@ -283,36 +283,46 @@ public class SeedEditor : Editor
 
     Vector3 GetDistancePosition(GameObject go, Direction direction)
     {
-        float lenght = 0;
         Vector3 DistanceToReturn = new Vector3(0, 0, 0);
         switch (direction)
         {
             case Direction.Forward:
-                if(go.transform.childCount > 0)
-                {
-                    for (int i = 0; i < go.transform.childCount; i++)
-                    {
-                        lenght += go.transform.GetChild(i).GetComponent<Renderer>().bounds.size.z;                        
-                    }
-                    DistanceToReturn = new Vector3(0, 0, lenght); 
-                }
-                else
-                {
-                    DistanceToReturn = new Vector3(0, 0, go.GetComponent<Renderer>().bounds.size.z);
-                }
-
-                return DistanceToReturn;
+                    DistanceToReturn = new Vector3(0, 0, _target.transform.position.z + go.GetComponent<Renderer>().bounds.size.z / 2);
+                    return DistanceToReturn;
             case Direction.Backward:
-                return new Vector3(0, 0, -go.GetComponent<Renderer>().bounds.size.z);
+                    DistanceToReturn = new Vector3(0, 0, _target.transform.position.z - go.GetComponent<Renderer>().bounds.size.z / 2);
+                    return DistanceToReturn;
             case Direction.Left:
-                return new Vector3(-go.GetComponent<Renderer>().bounds.size.x, 0, 0);
+                    DistanceToReturn = new Vector3(_target.transform.position.x - go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                    return DistanceToReturn;
             case Direction.Right:
-                return new Vector3(go.GetComponent<Renderer>().bounds.size.x, 0, 0);
+                    DistanceToReturn = new Vector3(_target.transform.position.x + go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                    return DistanceToReturn;
         }
 
         return default(Vector3);
     }
+    Vector3 GetDistancePosition2(GameObject go, Direction direction)
+    {
+        Vector3 DistanceToReturn = new Vector3(0, 0, 0);
+        switch (direction)
+        {
+            case Direction.Forward:
+                DistanceToReturn = new Vector3(0, 0, go.GetComponent<Renderer>().bounds.size.z / 2);
+                return DistanceToReturn;
+            case Direction.Backward:
+                DistanceToReturn = new Vector3(0, 0, go.GetComponent<Renderer>().bounds.size.z / 2);
+                return DistanceToReturn;
+            case Direction.Left:
+                DistanceToReturn = new Vector3(go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                return DistanceToReturn;
+            case Direction.Right:
+                DistanceToReturn = new Vector3(go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                return DistanceToReturn;
+        }
 
+        return default(Vector3);
+    }
     public enum Direction
     {
         Forward,
