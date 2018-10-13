@@ -160,25 +160,25 @@ public class SeedEditor : Editor
 
         if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
         {
-            if(!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
+            //if(!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
                 ButtonSwitch(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward,Direction.Forward);
         }
 
         if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
         {
-            if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
+            //if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
                 ButtonSwitch(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward,Direction.Backward);
         }
 
         if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
         {
-            if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
+            //if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
                 ButtonSwitch(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right,Direction.Right);
         }
 
         if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
         {
-            if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
+            //if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
                 ButtonSwitch(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right,Direction.Left);
         }
 
@@ -261,19 +261,27 @@ public class SeedEditor : Editor
         //Vector3 distance = new Vector3(0, 0, 0);
         GameObject lastObject = null;
         GameObject path = (GameObject)Instantiate(_target.mapItems[_target.selectedIndex]);
-        if(pathsSaved.paths.Count > 0)
+        path.transform.position = new Vector3(0, 0, 0);
+        if (pathsSaved.paths.Count > 0)
             lastObject = pathsSaved.paths[pathsSaved.paths.Count - 1];
+        else
+            lastObject = path;
 
         pathsSaved.paths.Add(path);
 
+        //_target.transform.position = path.transform.position;
         //if(lastObject != null)
         //distance = GetDistancePosition(lastObject, direction);
 
-        path.transform.position = GetDistancePosition(path, direction);//new Vector3(0,0, _target.transform.position.z + path.GetComponent<Renderer>().bounds.size.z / 2);
-        //path.gameObject.AddComponent<Path>();
-        _target.transform.position = path.transform.position + GetDistancePosition2(path, direction);//new Vector3(0, 0, path.GetComponent<Renderer>().bounds.size.z / 2);
-        //Selection.activeObject = path;
+        //_target.transform.position = lastObject.transform.position;
 
+        _target.transform.position = GetNextMove(lastObject, direction);
+
+        path.transform.position = GetPathPosition(lastObject, direction);//new Vector3(0,0, _target.transform.position.z + path.GetComponent<Renderer>().bounds.size.z / 2);
+
+        _target.transform.position = path.transform.position;
+        //_target.transform.position = path.transform.position + GetDistancePosition2(path, direction);//new Vector3(0, 0, path.GetComponent<Renderer>().bounds.size.z / 2);
+        //Selection.activeObject = path;
 
         //foreach (var item in tilesManager.nodes)
         //{
@@ -281,27 +289,50 @@ public class SeedEditor : Editor
         //}
     }
 
-    Vector3 GetDistancePosition(GameObject go, Direction direction)
+    public Vector3 GetNextMove(GameObject go, Direction direction)
     {
         Vector3 DistanceToReturn = new Vector3(0, 0, 0);
         switch (direction)
         {
             case Direction.Forward:
-                    DistanceToReturn = new Vector3(0, 0, _target.transform.position.z + go.GetComponent<Renderer>().bounds.size.z / 2);
+                DistanceToReturn = new Vector3(go.transform.position.x, 0, go.transform.position.z + go.GetComponent<Renderer>().bounds.size.z / 2);
+                return DistanceToReturn;
+            case Direction.Backward:
+                DistanceToReturn = new Vector3(go.transform.position.x, 0, go.transform.position.z - go.GetComponent<Renderer>().bounds.size.z / 2);
+                return DistanceToReturn;
+            case Direction.Left:
+                DistanceToReturn = new Vector3(go.transform.position.x - go.GetComponent<Renderer>().bounds.size.x / 2, 0, go.transform.position.z);
+                return DistanceToReturn;
+            case Direction.Right:
+                DistanceToReturn = new Vector3(go.transform.position.x + go.GetComponent<Renderer>().bounds.size.x / 2, 0, go.transform.position.z);
+                return DistanceToReturn;
+        }
+
+        return default(Vector3);
+    }
+
+    Vector3 GetPathPosition(GameObject go, Direction direction)
+    {
+        Vector3 DistanceToReturn = new Vector3(0, 0, 0);
+        switch (direction)
+        {
+            case Direction.Forward:
+                    DistanceToReturn = new Vector3(_target.transform.position.x, 0, _target.transform.position.z + go.GetComponent<Renderer>().bounds.size.z / 2);
                     return DistanceToReturn;
             case Direction.Backward:
-                    DistanceToReturn = new Vector3(0, 0, _target.transform.position.z - go.GetComponent<Renderer>().bounds.size.z / 2);
+                    DistanceToReturn = new Vector3(_target.transform.position.x, 0, _target.transform.position.z - go.GetComponent<Renderer>().bounds.size.z / 2);
                     return DistanceToReturn;
             case Direction.Left:
-                    DistanceToReturn = new Vector3(_target.transform.position.x - go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                    DistanceToReturn = new Vector3(_target.transform.position.x - go.GetComponent<Renderer>().bounds.size.x / 2, 0, _target.transform.position.z);
                     return DistanceToReturn;
             case Direction.Right:
-                    DistanceToReturn = new Vector3(_target.transform.position.x + go.GetComponent<Renderer>().bounds.size.x / 2, 0, 0);
+                    DistanceToReturn = new Vector3(_target.transform.position.x + go.GetComponent<Renderer>().bounds.size.x / 2, 0, _target.transform.position.z);
                     return DistanceToReturn;
         }
 
         return default(Vector3);
     }
+
     Vector3 GetDistancePosition2(GameObject go, Direction direction)
     {
         Vector3 DistanceToReturn = new Vector3(0, 0, 0);
@@ -323,6 +354,7 @@ public class SeedEditor : Editor
 
         return default(Vector3);
     }
+
     public enum Direction
     {
         Forward,
