@@ -12,7 +12,7 @@ public class SeedEditor : Editor
     private Seed _target;
     //public List<GameObject> tilesCreated = new List<GameObject>();
 
-    public float buttonWidth = 100;
+    public float buttonWidth = 130;
     public float buttonPlusWidth = 30;
     public float buttonHeight = 30;
 
@@ -32,6 +32,11 @@ public class SeedEditor : Editor
     public PathConfig pathsSaved;
 
     float buttonYPos = 100;
+
+    void OnEnable()
+    {
+        _target = (Seed)target;
+    }
 
     public override void OnInspectorGUI()
     {
@@ -56,18 +61,49 @@ public class SeedEditor : Editor
 
         _target.selectedIndex = EditorGUILayout.Popup("Path to create", _target.selectedIndex, _target.mapItems.Select(x => x.name).ToArray());
 
-        for (int i = 0; i < _target.mapItems.Count; i++)
+        ShowPreview();
+    }
+
+    private void FixValues()
+    {
+
+    }   
+
+    void OnSceneGUI()
+    {
+        Handles.BeginGUI();
+
+        var screenPos = Camera.current.WorldToScreenPoint(_target.transform.position);
+
+        RestartMap();
+
+        DeleteLastPath();
+
+        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
         {
-            //EditorGUILayout.BeginHorizontal(GUILayout.Width(11000));
-            _target.mapItems[i] = (GameObject)EditorGUILayout.ObjectField("Path: " + (i + 1), _target.mapItems[i], typeof(GameObject), true);
-            //_target.measure.Add(();
-            //_target.measure[i] = EditorGUILayout.Vector3Field("Measure", _target.measure[i]);
-            //_target.medida = EditorGUILayout.Vector3Field("Measure", _target.medida);
-            //EditorGUILayout.EndHorizontal();
+            if (!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
+                ButtonSwitch(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward, Direction.Forward);
         }
-        
-        //_distanceBetweenPaths = EditorGUILayout.Vector3Field("Distance between paths",_distanceBetweenPaths);
-    }    
+
+        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
+        {
+            if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
+                ButtonSwitch(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward, Direction.Backward);
+        }
+
+        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
+        {
+            if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
+                ButtonSwitch(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right, Direction.Right);
+        }
+
+        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
+        {
+            if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
+                ButtonSwitch(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right, Direction.Left);
+        }
+        Handles.EndGUI();
+    }
 
     public void ConfigurateObjects()
     {
@@ -77,58 +113,35 @@ public class SeedEditor : Editor
         {
             pathsSaved.objectsLoaded = _target.mapItems.Count;
 
-            //_target.mapItemsGO.Clear();
-
-            //_target.mapItemsGO.AddRange(_target.mapItems.OfType<GameObject>());
-
             foreach (var item in pathsSaved.paths)
             {
                 if (item != null && item.GetComponent<Path>() == null)
                     item.AddComponent<Path>();
-
-                if (item.transform.childCount > 0)
-                {
-                    if (item.transform.childCount <= 0 && item.GetComponent<Renderer>() == null)
-                        item.AddComponent<Renderer>();
-                    //for (int i = 0; i < item.transform.childCount; i++)
-                    //{
-                    //    if (item.transform.GetChild(i).gameObject.GetComponent<Renderer>() == null)
-                    //        item.transform.GetChild(i).gameObject.AddComponent<Renderer>();
-                    //}
-                }
             }
         }        
     }
-
-    private void FixValues()
+    public void ShowPreview()
     {
+        var _preview = AssetPreview.GetAssetPreview(_target.mapItems[_target.selectedIndex]);
+        if (_preview != null)
+        {
+            Repaint();
+            GUILayout.BeginHorizontal();
+            GUI.DrawTexture(GUILayoutUtility.GetRect(150, 150, 150, 150), _preview, ScaleMode.ScaleToFit);
+            GUILayout.Label(_target.mapItems[_target.selectedIndex].name);
+            GUILayout.Label(AssetDatabase.GetAssetPath(_target.mapItems[_target.selectedIndex]));
+            GUILayout.EndHorizontal();
+        }
+    }     
 
-    }
-
-    void OnEnable()
-    {        
-        _target = (Seed)target;
-
-        Debug.Log(buttonsPosition.Count);
-    }
-
-    public void RestartMap(Vector3 screenPos)
+    public void RestartMap()
     {
         if (GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "Restart Map"))
         {
-            //foreach (var item in _target.mapItemsGO)
-            //{
-            //    DestroyImmediate(item);
-            //}
-
             foreach (var item in pathsSaved.paths)
             {
                 DestroyImmediate(item);
             }
-            
-            //_target.mapItemsGO.Clear();
-
-            //_target.mapItems.Clear();
 
             pathsSaved.paths.Clear();
 
@@ -136,60 +149,21 @@ public class SeedEditor : Editor
         }
     }
 
-    //de esta forma los botones se escalan bien pero rotan junto con la camara
-    void OnSceneGUI()
+    public void DeleteLastPath()
     {
-        Handles.BeginGUI();
-
-        var screenPos = Camera.current.WorldToScreenPoint(_target.transform.position);
-        //var screenPosTest = Camera.current.WorldToScreenPoint(CheckDistance());
-        //var addValue = 30 / Vector3.Distance(Camera.current.transform.position, _target.transform.position);
-
-        //var p = Camera.current.WorldToScreenPoint(_target.transform.position + _target.transform.forward * addValue);
-        //r size = 700 / Vector3.Distance(Camera.current.transform.position, _target.transform.position + _target.transform.forward * addValue);
-        //RaycastHit rayForward;
-
-        //if (GUI.Button(new Rect(screenPos.x - buttonWidth / 2, Camera.current.pixelHeight - screenPos.y, buttonWidth, buttonHeight), "ChangeType"))
-        //{
-        //    ButtonSwitch(ButtonType.ChangeType, /*_target.transform.position,*/Vector3.zero);
-        //}
-
-        //if(Vector3.Distance())
-        RestartMap(screenPos);
-
-
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
+        if (GUI.Button(new Rect(20, 60, buttonWidth, buttonHeight), "Delete Last Path"))
         {
-            //if(!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
-                ButtonSwitch(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward,Direction.Forward);
-        }
+            var lastObject = pathsSaved.paths[pathsSaved.paths.Count - 1];
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
-        {
-            //if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
-                ButtonSwitch(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward,Direction.Backward);
-        }
+            _target.transform.position = lastObject.transform.position;
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
-        {
-            //if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
-                ButtonSwitch(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right,Direction.Right);
-        }
+            pathsSaved.paths.Remove(lastObject);
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
-        {
-            //if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
-                ButtonSwitch(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right,Direction.Left);
+            DestroyImmediate(lastObject);            
         }
-
-        //DrawButton("ChangeType", _target.transform.position, Vector3.zero, ButtonType.ChangeType);        
-        //DrawButton("+", _target.transform.position + _target.transform.forward * addValue, _target.transform.forward, ButtonType.Add);
-        //DrawButton("+", _target.transform.position - _target.transform.forward * addValue, -_target.transform.forward, ButtonType.Add);
-        //DrawButton("+", _target.transform.position + _target.transform.right * addValue, _target.transform.right, ButtonType.Add);
-        //DrawButton("+", _target.transform.position - _target.transform.right * addValue, -_target.transform.right, ButtonType.Add);
-        Handles.EndGUI();
     }
 
+    //de esta forma los botones se escalan bien pero rotan junto con la camara
     public Vector3 CheckDistance(Vector3 pos)
     {
         Vector3 temp = new Vector3(Mathf.Infinity,Mathf.Infinity);
@@ -204,9 +178,7 @@ public class SeedEditor : Editor
                 temp = item.transform.position;
             }
         }
-
-        return temp;
-        
+        return temp;        
     }
 
     // como limitar el tamaño de los botones? tengo que hacer scripts aparte e instanciar esos scripts como botones y limitar su max size desde ahi?
@@ -269,24 +241,11 @@ public class SeedEditor : Editor
 
         pathsSaved.paths.Add(path);
 
-        //_target.transform.position = path.transform.position;
-        //if(lastObject != null)
-        //distance = GetDistancePosition(lastObject, direction);
-
-        //_target.transform.position = lastObject.transform.position;
-
         _target.transform.position = GetNextMove(lastObject, direction);
 
         path.transform.position = GetPathPosition(lastObject, direction);//new Vector3(0,0, _target.transform.position.z + path.GetComponent<Renderer>().bounds.size.z / 2);
 
         _target.transform.position = path.transform.position;
-        //_target.transform.position = path.transform.position + GetDistancePosition2(path, direction);//new Vector3(0, 0, path.GetComponent<Renderer>().bounds.size.z / 2);
-        //Selection.activeObject = path;
-
-        //foreach (var item in tilesManager.nodes)
-        //{
-        //    item.UpdateTiles();
-        //}
     }
 
     public Vector3 GetNextMove(GameObject go, Direction direction)
