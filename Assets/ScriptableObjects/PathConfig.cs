@@ -5,5 +5,5 @@ using UnityEngine;
 public class PathConfig : ScriptableObject 
 {
     public List<GameObject> paths = new List<GameObject>();
-    public int objectsLoaded;
+    public List<Object> objectsToInstantiate = new List<Object>();
 }
