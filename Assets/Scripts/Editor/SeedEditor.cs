@@ -221,7 +221,12 @@ public class SeedEditor : Editor
         path.transform.position = new Vector3(0, 0, 0);
 
         if (path.GetComponent<Path>() == null)
-            path.AddComponent<Path>();
+        {
+            path.AddComponent<Path>().lastIndex = _target.selectedIndex;
+            var temp = path.GetComponent<Path>();
+            temp.currentIndex = _target.selectedIndex;
+            temp.id = pathsSaved.paths.Count;
+        }            
 
         if (pathsSaved.paths.Count > 0)
             lastObject = pathsSaved.paths[pathsSaved.paths.Count - 1];
