@@ -52,16 +52,14 @@ public class PathEditor : Editor
 
             path.AddComponent<Path>().currentIndex = _target.currentIndex;
             path.GetComponent<Path>().lastIndex = _target.currentIndex;
+            path.GetComponent<Path>().id = _target.id;
 
-            DestroyImmediate(pathsSaved.paths[_target.id]);            
+            DestroyImmediate(pathsSaved.paths[_target.id]);
 
-            pathsSaved.paths.Remove(pathsSaved.paths[_target.id]);            
+            pathsSaved.paths.Remove(pathsSaved.paths[_target.id]);
 
-            path.GetComponent<Path>().id = pathsSaved.paths.Count;
-
-            //pathsSaved.paths.Insert(_target.id, path);
-
-            pathsSaved.paths.Add(path);
+            pathsSaved.paths.Insert(_target.id, path);
+            //pathsSaved.paths.Add(path);
             Selection.activeObject = path;
         }
     }
