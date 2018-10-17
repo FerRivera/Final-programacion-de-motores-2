@@ -11,8 +11,6 @@ public class PathEditor : Editor
 
     public PathConfig pathsSaved;
 
-    static bool canSwitch;
-
     void OnEnable()
     {
         _target = (Path)target;
@@ -45,24 +43,27 @@ public class PathEditor : Editor
 
     void SwitchType()
     {
-        if(_target.lastIndex != _target.currentIndex && canSwitch)
+        if(_target.lastIndex != _target.currentIndex)
         {
-            _target.lastIndex = _target.currentIndex;
+            //_target.lastIndex = _target.currentIndex;
             
             GameObject path = (GameObject)Instantiate(pathsSaved.objectsToInstantiate[_target.currentIndex]);
-            path.transform.position = pathsSaved.paths[_target.id].transform.position;            
-            path.AddComponent<Path>().currentIndex = _target.lastIndex;
-            DestroyImmediate(pathsSaved.paths[_target.id]);
-            pathsSaved.paths.Insert(_target.id, path);
+            path.transform.position = pathsSaved.paths[_target.id].transform.position;
+
+            path.AddComponent<Path>().currentIndex = _target.currentIndex;
+            path.GetComponent<Path>().lastIndex = _target.currentIndex;
+
+            DestroyImmediate(pathsSaved.paths[_target.id]);            
+
+            pathsSaved.paths.Remove(pathsSaved.paths[_target.id]);            
+
+            path.GetComponent<Path>().id = pathsSaved.paths.Count;
+
+            //pathsSaved.paths.Insert(_target.id, path);
+
+            pathsSaved.paths.Add(path);
             Selection.activeObject = path;
         }
-    }
-
-    public static void ExitGUI()
-    {
-        GUIUtility.ExitGUI();
-        canSwitch = true;
-        throw new ExitGUIException();
     }
 
     private void FixValues()
