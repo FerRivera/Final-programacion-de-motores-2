@@ -32,7 +32,6 @@ public class PathEditor : Editor
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
 
         SwitchType();
-        //pathsSaved = (PathConfig)Resources.Load("PathConfig");
 
         //ConfigurateObjects();
 
