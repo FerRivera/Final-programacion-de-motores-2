@@ -3,9 +3,13 @@ using UnityEditor;
 
 public class ScriptableObjectsCreator
 {
-    [MenuItem("Utilities/Create/PathConfig")]
+    [MenuItem("Level options/Create/Map configurations")]
     public static void CreatePathConfig()
     {
-        ScriptableObjectUtility.CreateAsset<PathConfig>();
+        ScriptableObjectUtility.CreateAsset<PathConfig>("Resources/PathConfig");
     }
+    //public static void CreateMapSave(string path)
+    //{
+    //    ScriptableObjectUtility.CreateAsset<MapsSaved>(path);
+    //}
 }

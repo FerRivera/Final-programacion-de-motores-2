@@ -4,13 +4,13 @@ using System.IO;
 
 public static class ScriptableObjectUtility
 {
-    public static void CreateAsset<T>() where T : ScriptableObject
+    public static void CreateAsset<T>(string path) where T : ScriptableObject
     {
         //Creamos la instancia del asset
         T asset = ScriptableObject.CreateInstance<T>();
         
         //Creamos la ubicación donde vamos a guardar el asset
-        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath("Assets/" + typeof(T).ToString() + ".asset");
+        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath("Assets/" + path + ".asset");
 
         //Creamos el asset
         AssetDatabase.CreateAsset(asset, assetPathAndName);

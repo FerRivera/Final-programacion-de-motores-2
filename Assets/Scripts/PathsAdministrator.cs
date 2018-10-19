@@ -26,8 +26,6 @@ public class PathsAdministrator
 
         //selectedIndex = EditorGUILayout.Popup(selectedIndex,mapItems.Select(x => x.name).ToArray());
 
-
-
         #region window
         //_groupFloat = EditorGUILayout.FloatField("Amount of objects", _groupFloat);
         //_previewsList.Clear();

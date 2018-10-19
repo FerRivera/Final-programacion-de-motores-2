@@ -3,18 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor; //Siempre que trabajamos con editor usamos UnityEditor
 using System.Threading;
+using System;
 
 public class Window : EditorWindow // Tiene que heredar de Editor Window
 { 
 
     private bool _groupEnabled;
     private bool _groupBoolExample;
-    private string _groupStringExample;
-    private float _clicks;
-    PathsAdministrator _pathAdministrator = new PathsAdministrator();
+    private string _mapName;
+    private string _path;
+    private int click;
     public PathConfig pathsSaved;
 
-    [MenuItem("Level constructor/Manager")] // La ubicación dentro del editor de Unity
+    [MenuItem("Level options/Save map")] // La ubicación dentro del editor de Unity
     static void CreateWindow() // Crea la ventana a mostrar
     {
         var window = ((Window)GetWindow(typeof(Window))); //Esta línea va a obtener la ventana o a crearla. Una vez que haga esto, va a mostrarla.
@@ -35,11 +36,52 @@ public class Window : EditorWindow // Tiene que heredar de Editor Window
 
     }
 
+    public void GuardarMapa()
+    {
 
+        _mapName = EditorGUILayout.TextField("Map name", _mapName);
+
+        EditorGUI.BeginDisabledGroup(true);
+        _path = EditorGUILayout.TextField("Path Selected", _path);
+        EditorGUI.EndDisabledGroup();
+
+        if (GUILayout.Button("Select folder"))
+        {
+            _path = EditorUtility.OpenFolderPanel("Select folder", "Assets/", _path);
+
+            if (!String.IsNullOrEmpty(_path))            
+                _path = _path.Split(new[] { "Assets/" }, StringSplitOptions.None)[1];                     
+
+            Repaint();
+        }
+
+        if (GUILayout.Button("Save map"))
+        {
+            ScriptableObjectUtility.CreateAsset<MapsSaved>(_path + "/" + _mapName);
+
+            //var temp = AssetDatabase.LoadAssetAtPath<MapsSaved>(_path + "/" + _mapName);
+
+            //var temp = AssetDatabase.LoadAllAssetsAtPath(_path + "/" + _mapName);
+
+            var temp = (ScriptableObject)AssetDatabase.LoadAssetAtPath(_path + "/" + _mapName, typeof(ScriptableObject));
+
+            //var a = temp.GetType();
+
+            if(temp.GetType() is MapsSaved)
+            {
+                
+            }
+
+            //temp.paths.AddRange(pathsSaved.paths);
+        }
+
+    }
 
     void OnGUI() // Todo lo que se muestra en la ventana
     {
-        _pathAdministrator.Update();
+        GuardarMapa();
+
+        //_pathAdministrator.Update();
         //for (int i = 0; i < _groupFloat; i++)
         //{
         //    _goToPreview = (GameObject)EditorGUILayout.ObjectField("Object: ", _goToPreview, typeof(GameObject), true);
