@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEditor; //Siempre que trabajamos con editor usamos UnityEditor
 using System.Threading;
 
-public class Window : EditorWindow { // Tiene que heredar de Editor Window
+public class Window : EditorWindow // Tiene que heredar de Editor Window
+{ 
 
     private bool _groupEnabled;
     private bool _groupBoolExample;
     private string _groupStringExample;
     private float _clicks;
     PathsAdministrator _pathAdministrator = new PathsAdministrator();
+    public PathConfig pathsSaved;
 
     [MenuItem("Level constructor/Manager")] // La ubicación dentro del editor de Unity
     static void CreateWindow() // Crea la ventana a mostrar
@@ -29,8 +31,11 @@ public class Window : EditorWindow { // Tiene que heredar de Editor Window
         //_previewsList.Add(temp);
         //}
         //Debug.Log("INIT");
+        pathsSaved = (PathConfig)Resources.Load("PathConfig");
 
     }
+
+
 
     void OnGUI() // Todo lo que se muestra en la ventana
     {

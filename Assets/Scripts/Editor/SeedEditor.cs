@@ -12,12 +12,14 @@ public class SeedEditor : Editor
     private Seed _target;
 
     public float buttonWidth = 130;
-    public float buttonPlusWidth = 30;
     public float buttonHeight = 30;
+    public float buttonPlusWidth = 30;
 
     public List<GameObject> buttonsPosition = new List<GameObject>();
 
     public PathConfig pathsSaved;
+
+    public bool restartMap = false;
 
     void OnEnable()
     {
@@ -114,7 +116,17 @@ public class SeedEditor : Editor
 
     void RestartMap()
     {
-        if (GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "Restart Map"))
+
+        if (!restartMap && GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "Restart Map"))
+        {
+            restartMap = true;
+        }
+
+        if(restartMap && GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "No"))
+        {
+            restartMap = false;
+        }
+        if (restartMap && GUI.Button(new Rect(160, 20, buttonWidth, buttonHeight), "Yes"))
         {
             foreach (var item in pathsSaved.paths)
             {
@@ -123,7 +135,9 @@ public class SeedEditor : Editor
 
             pathsSaved.paths.Clear();
 
-            _target.transform.position = new Vector3(0,0,0);
+            _target.transform.position = new Vector3(0, 0, 0);
+
+            restartMap = false;
         }
     }
 
