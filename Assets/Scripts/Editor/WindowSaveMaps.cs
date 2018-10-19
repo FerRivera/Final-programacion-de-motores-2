@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEditor; //Siempre que trabajamos con editor usamos UnityEditor
 using System.Threading;
 using System;
+using System.Linq;
 
-public class Window : EditorWindow // Tiene que heredar de Editor Window
+public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
 { 
 
     private bool _groupEnabled;
@@ -18,22 +19,14 @@ public class Window : EditorWindow // Tiene que heredar de Editor Window
     [MenuItem("Level options/Save map")] // La ubicación dentro del editor de Unity
     static void CreateWindow() // Crea la ventana a mostrar
     {
-        var window = ((Window)GetWindow(typeof(Window))); //Esta línea va a obtener la ventana o a crearla. Una vez que haga esto, va a mostrarla.
+        var window = ((WindowSaveMaps)GetWindow(typeof(WindowSaveMaps))); //Esta línea va a obtener la ventana o a crearla. Una vez que haga esto, va a mostrarla.
         window.Show();
         window.Init();
     }
 
     public void Init()
     {
-        //_previewsList.Clear();
-        //for (int i = 0; i < _groupFloat; i++)
-        //{
-        //GameObject temp = null;
-        //_previewsList.Add(temp);
-        //}
-        //Debug.Log("INIT");
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
-
     }
 
     public void GuardarMapa()
@@ -59,20 +52,23 @@ public class Window : EditorWindow // Tiene que heredar de Editor Window
         {
             ScriptableObjectUtility.CreateAsset<MapsSaved>(_path + "/" + _mapName);
 
-            //var temp = AssetDatabase.LoadAssetAtPath<MapsSaved>(_path + "/" + _mapName);
+            var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
 
-            //var temp = AssetDatabase.LoadAllAssetsAtPath(_path + "/" + _mapName);
+            MapsSaved currentMap = null;
 
-            var temp = (ScriptableObject)AssetDatabase.LoadAssetAtPath(_path + "/" + _mapName, typeof(ScriptableObject));
-
-            //var a = temp.GetType();
-
-            if(temp.GetType() is MapsSaved)
+            for (int i = asset.Length - 1; i >= 0; i--)
             {
-                
+                string path = AssetDatabase.GUIDToAssetPath(asset[i]);
+
+                if (path.Contains(_mapName))
+                {
+                    currentMap = AssetDatabase.LoadAssetAtPath<MapsSaved>(path);
+                    break;
+                }
             }
 
-            //temp.paths.AddRange(pathsSaved.paths);
+            if(currentMap != null)
+                currentMap.paths.AddRange(pathsSaved.paths);
         }
 
     }
