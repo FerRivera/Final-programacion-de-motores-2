@@ -31,7 +31,7 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
 
     public void GuardarMapa()
     {
-
+        
         _mapName = EditorGUILayout.TextField("Map name", _mapName);
 
         EditorGUI.BeginDisabledGroup(true);
@@ -78,9 +78,11 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
 
                 if (currentMap != null)
                     currentMap.paths.AddRange(pathsSaved.paths);
-            }            
+            }       
         }
 
+        if (CheckIfNameExist(_mapName))
+            EditorGUILayout.HelpBox("That name is already in use!", MessageType.Warning);
     }
 
     public bool CheckIfNameExist(string fileName)
