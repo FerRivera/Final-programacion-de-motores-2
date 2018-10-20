@@ -50,27 +50,61 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
 
         if (GUILayout.Button("Save map"))
         {
-            ScriptableObjectUtility.CreateAsset<MapsSaved>(_path + "/" + _mapName);
+            List<string> tempPath = new List<string>();
 
-            var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
-
-            MapsSaved currentMap = null;
-
-            for (int i = asset.Length - 1; i >= 0; i--)
+            if (!CheckIfNameExist(_mapName))
             {
-                string path = AssetDatabase.GUIDToAssetPath(asset[i]);
+                ScriptableObjectUtility.CreateAsset<MapsSaved>(_path + "/" + _mapName);
 
-                if (path.Contains(_mapName))
+                var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
+
+                MapsSaved currentMap = null;
+
+                for (int i = asset.Length - 1; i >= 0; i--)
                 {
-                    currentMap = AssetDatabase.LoadAssetAtPath<MapsSaved>(path);
-                    break;
+                    //obtengo todo el path
+                    string path = AssetDatabase.GUIDToAssetPath(asset[i]);
+                    //separo las diferentes carpetas por el carcater /
+                    tempPath = path.Split('/').ToList();
+                    //obtengo la ultima parte, que seria el nombre con la extension y saco la extension
+                    var currentMapName = tempPath.LastOrDefault().Split('.');
+                    //si el nombre que obtuve con el que escribi son iguales entonces uso ese scriptable object
+                    if (currentMapName[0] == _mapName)
+                    {
+                        currentMap = AssetDatabase.LoadAssetAtPath<MapsSaved>(path);
+                        break;
+                    }
                 }
-            }
 
-            if(currentMap != null)
-                currentMap.paths.AddRange(pathsSaved.paths);
+                if (currentMap != null)
+                    currentMap.paths.AddRange(pathsSaved.paths);
+            }            
         }
 
+    }
+
+    public bool CheckIfNameExist(string fileName)
+    {
+        List<string> tempPath = new List<string>();
+
+        var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
+
+        for (int i = asset.Length - 1; i >= 0; i--)
+        {
+            //obtengo todo el path
+            string path = AssetDatabase.GUIDToAssetPath(asset[i]);
+            //separo las diferentes carpetas por el carcater /
+            tempPath = path.Split('/').ToList();
+            //obtengo la ultima parte, que seria el nombre con la extension y saco la extension
+            var currentMapName = tempPath.LastOrDefault().Split('.');
+            //si el nombre que obtuve con el que escribi son iguales entonces uso ese scriptable object
+            if (currentMapName[0] == fileName)
+            {                
+                return true;
+            }
+        }
+
+        return false;
     }
 
     void OnGUI() // Todo lo que se muestra en la ventana
