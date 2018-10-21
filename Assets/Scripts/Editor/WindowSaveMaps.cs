@@ -29,7 +29,7 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
     }
 
-    public void GuardarMapa()
+    public void SaveMap()
     {
         
         _mapName = EditorGUILayout.TextField("Map name", _mapName);
@@ -111,7 +111,7 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
 
     void OnGUI() // Todo lo que se muestra en la ventana
     {
-        GuardarMapa();
+        SaveMap();
 
         //_pathAdministrator.Update();
         //for (int i = 0; i < _groupFloat; i++)
