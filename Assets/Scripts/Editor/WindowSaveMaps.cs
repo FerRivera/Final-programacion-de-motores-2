@@ -77,7 +77,12 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
                 }
 
                 if (currentMap != null)
+                {
                     currentMap.paths.AddRange(pathsSaved.paths);
+                    currentMap.objectType.AddRange(pathsSaved.objectType);
+                    currentMap.positions.AddRange(pathsSaved.positions);
+                }
+                    
             }       
         }
 

@@ -10,6 +10,7 @@ public class WindowLoadMaps : EditorWindow
     private Vector2 _scrollPosition;
     public float maxYSize = 500;
     public float maxXSize = 500;
+    public PathConfig pathsSaved;
 
     [MenuItem("Level options/Load maps")]
     static void CreateWindow()
@@ -21,6 +22,8 @@ public class WindowLoadMaps : EditorWindow
 
     public void Init()
     {
+        pathsSaved = (PathConfig)Resources.Load("PathConfig");
+
         maxSize = new Vector2(maxXSize, maxYSize);
 
         var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
@@ -91,12 +94,20 @@ public class WindowLoadMaps : EditorWindow
 
     public void LoadMapOnScene(MapsSaved map)
     {
-        foreach (var item in map.paths)
+        int count = map.paths.Count;
+
+        for (int i = 0; i < count; i++)
         {
-            GameObject path = (GameObject)Instantiate(item);
-            path.transform.position = item.transform.position;
-        }
-        
+            GameObject path = (GameObject)Instantiate(pathsSaved.objectsToInstantiate[map.objectType[i]]);
+            path.transform.position = map.positions[i];
+            path.AddComponent<Path>().currentIndex = map.objectType[i];
+            path.GetComponent<Path>().lastIndex = map.objectType[i];
+            path.GetComponent<Path>().id = i;
+
+            pathsSaved.paths.Add(path);
+            pathsSaved.objectType.Add(map.objectType[i]);
+            pathsSaved.positions.Add(path.transform.position);
+        }        
         
     }
 

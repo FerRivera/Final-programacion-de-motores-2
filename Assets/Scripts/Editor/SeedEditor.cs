@@ -134,6 +134,8 @@ public class SeedEditor : Editor
             }
 
             pathsSaved.paths.Clear();
+            pathsSaved.objectType.Clear();
+            pathsSaved.positions.Clear();
 
             _target.transform.position = new Vector3(0, 0, 0);
 
@@ -149,6 +151,8 @@ public class SeedEditor : Editor
             {
                 var lastObject = pathsSaved.paths.LastOrDefault();
 
+                pathsSaved.objectType.RemoveAt(pathsSaved.paths.Count-1);
+                pathsSaved.positions.RemoveAt(pathsSaved.paths.Count-1);
                 pathsSaved.paths.Remove(lastObject);
 
                 if (pathsSaved.paths.LastOrDefault() != null)
@@ -245,15 +249,17 @@ public class SeedEditor : Editor
         if (pathsSaved.paths.Count > 0)
             lastObject = pathsSaved.paths[pathsSaved.paths.Count - 1];
         else
-            lastObject = path;
-
-        pathsSaved.paths.Add(path);
+            lastObject = path;        
 
         _target.transform.position = GetNextMove(lastObject, direction);
 
         path.transform.position = GetPathPosition(lastObject, direction);
 
         _target.transform.position = path.transform.position;
+
+        pathsSaved.paths.Add(path);
+        pathsSaved.objectType.Add(_target.selectedIndex);
+        pathsSaved.positions.Add(path.transform.position);
     }
 
     Vector3 GetNextMove(GameObject go, Direction direction)

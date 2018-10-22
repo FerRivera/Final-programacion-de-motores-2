@@ -56,8 +56,12 @@ public class PathEditor : Editor
             DestroyImmediate(pathsSaved.paths[_target.id]);
 
             pathsSaved.paths.Remove(pathsSaved.paths[_target.id]);
+            pathsSaved.objectType.Remove(pathsSaved.objectType[_target.id]);
+            pathsSaved.positions.Remove(pathsSaved.positions[_target.id]);
 
             pathsSaved.paths.Insert(_target.id, path);
+            pathsSaved.objectType.Insert(_target.id, path.GetComponent<Path>().currentIndex);
+            pathsSaved.positions.Insert(_target.id, path.transform.position);
             //pathsSaved.paths.Add(path);
             Selection.activeObject = path;
         }
