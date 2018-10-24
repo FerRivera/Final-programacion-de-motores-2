@@ -76,29 +76,6 @@ public class SeedEditor : Editor
         DrawButton("+", _target.transform.position + Camera.current.transform.right * addValue, ButtonType.Add);
         DrawButton("+", _target.transform.position - Camera.current.transform.right * addValue, ButtonType.Add);
 
-        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
-        //{
-        //    if (!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
-        //        CreatePath(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward, Direction.Forward);
-        //}
-
-        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
-        //{
-        //    if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
-        //        CreatePath(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward, Direction.Backward);
-        //}
-
-        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
-        //{
-        //    if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
-        //        CreatePath(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right, Direction.Right);
-        //}
-
-        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
-        //{
-        //    if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
-        //        CreatePath(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right, Direction.Left);
-        //}
         Handles.EndGUI();
     }
 
@@ -239,49 +216,6 @@ public class SeedEditor : Editor
 
             CreatePath(_target.transform.position + dirTest, dir);
         }
-
-        //var p = Camera.current.WorldToScreenPoint(position);
-        //var size = 700 / Vector3.Distance(Camera.current.transform.position, position);
-        //var r = new Rect(p.x - size/2, Screen.height - p.y - size, size, size/2);
-
-        //if (GUI.Button(r, text))
-        //{
-        //    switch(typ)
-        //    {
-        //        case ButtonType.Add:
-        //            Tile t = (Tile)Instantiate(Resources.Load("TilePrefab", typeof(Tile)));
-        //            tilesManager.nodes.Add(t);
-        //            t.transform.position = _target.transform.position + dir;
-        //            Selection.activeObject = t;
-        //            break;
-        //        case ButtonType.ChangeType:
-        //            switch(_target.currentType)
-        //            {
-        //                case Tile.TileTypes.Grass:
-        //                    _target.currentType = Tile.TileTypes.Ice;
-        //                    _target.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/Ice", typeof(Material));
-        //                    break;
-        //                case Tile.TileTypes.Ice:
-        //                    _target.currentType = Tile.TileTypes.Lava;
-        //                    _target.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/Lava", typeof(Material));
-        //                    break;
-        //                case Tile.TileTypes.Lava:
-        //                    _target.currentType = Tile.TileTypes.Water;
-        //                    _target.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/Water", typeof(Material));
-        //                    break;
-        //                case Tile.TileTypes.Water:
-        //                    _target.currentType = Tile.TileTypes.Grass;
-        //                    _target.GetComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/Grass", typeof(Material));
-        //                    break;
-        //            }
-        //            break;
-        //    }
-
-        //    foreach (var item in tilesManager.nodes)
-        //    {
-        //        item.UpdateTiles();
-        //    }
-        //}    
     }
 
     void CreatePath(Vector3 dir, Direction direction)
