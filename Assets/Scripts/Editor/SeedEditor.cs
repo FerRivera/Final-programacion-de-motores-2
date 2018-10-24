@@ -218,6 +218,14 @@ public class SeedEditor : Editor
 
         Direction dir;
 
+        RaycastHit rch5;
+
+        if (Physics.Raycast(_target.transform.position, dirTest, out rch5, 1))
+        {
+        }
+        if (rch5.collider != null)
+            return;
+
         if (GUI.Button(r, text))
         {
             if (dirTest.x >= 1)
