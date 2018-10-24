@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 using System.Linq;
+using System;
 
 //si no le pongo custom editor aca, me desaparecen los botones + para crear los path
 [CustomEditor(typeof(Seed))]
@@ -14,6 +15,9 @@ public class SeedEditor : Editor
     public float buttonWidth = 130;
     public float buttonHeight = 30;
     public float buttonPlusWidth = 30;
+
+    int _buttonMinSize = 45;
+    int _buttonMaxSize = 70;
 
     public List<GameObject> buttonsPosition = new List<GameObject>();
 
@@ -59,35 +63,42 @@ public class SeedEditor : Editor
     {
         Handles.BeginGUI();
 
+        var addValue = 30 / Vector3.Distance(Camera.current.transform.position, _target.transform.position);
+
         var screenPos = Camera.current.WorldToScreenPoint(_target.transform.position);
 
         RestartMap();
 
         DeleteLastPath();
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
-        {
-            if (!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
-                CreatePath(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward, Direction.Forward);
-        }
+        DrawButton("+", _target.transform.position + Camera.current.transform.up * addValue, ButtonType.Add);
+        DrawButton("+", _target.transform.position - Camera.current.transform.up * addValue, ButtonType.Add);
+        DrawButton("+", _target.transform.position + Camera.current.transform.right * addValue, ButtonType.Add);
+        DrawButton("+", _target.transform.position - Camera.current.transform.right * addValue, ButtonType.Add);
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
-        {
-            if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
-                CreatePath(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward, Direction.Backward);
-        }
+        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 + 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
+        //{
+        //    if (!Physics.Raycast(_target.transform.position, _target.transform.forward, 1))
+        //        CreatePath(/*_target.transform.position + _target.transform.forward * addValue,*/ _target.transform.forward, Direction.Forward);
+        //}
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
-        {
-            if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
-                CreatePath(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right, Direction.Right);
-        }
+        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2 - 100, Camera.current.pixelHeight - screenPos.y, buttonPlusWidth, buttonHeight), "+"))
+        //{
+        //    if (!Physics.Raycast(_target.transform.position, -_target.transform.forward, 1))
+        //        CreatePath(/*_target.transform.position - _target.transform.forward * addValue,*/ -_target.transform.forward, Direction.Backward);
+        //}
 
-        if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
-        {
-            if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
-                CreatePath(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right, Direction.Left);
-        }
+        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y + 100, buttonPlusWidth, buttonHeight), "+"))
+        //{
+        //    if (!Physics.Raycast(_target.transform.position, _target.transform.right, 1))
+        //        CreatePath(/*_target.transform.position + _target.transform.right * addValue,*/ _target.transform.right, Direction.Right);
+        //}
+
+        //if (GUI.Button(new Rect(screenPos.x - buttonPlusWidth / 2, Camera.current.pixelHeight - screenPos.y - 100, buttonPlusWidth, buttonHeight), "+"))
+        //{
+        //    if (!Physics.Raycast(_target.transform.position, -_target.transform.right, 1))
+        //        CreatePath(/*_target.transform.position - _target.transform.right * addValue,*/ -_target.transform.right, Direction.Left);
+        //}
         Handles.EndGUI();
     }
 
@@ -171,7 +182,7 @@ public class SeedEditor : Editor
     public Vector3 CheckDistance(Vector3 pos)
     {
         Vector3 temp = new Vector3(Mathf.Infinity,Mathf.Infinity);
-        float floatTemp = Mathf.Infinity;
+        float floatTemp = Mathf.Infinity; 
 
         foreach (var item in buttonsPosition)
         {
@@ -186,8 +197,41 @@ public class SeedEditor : Editor
     }
 
     // como limitar el tamaño de los botones? tengo que hacer scripts aparte e instanciar esos scripts como botones y limitar su max size desde ahi?
-    private void DrawButton(string text, Vector3 position, Vector3 dir)
+    private void DrawButton(string text, Vector3 position, ButtonType typ)
     {
+        var p = Camera.current.WorldToScreenPoint(position);
+
+        var size = 700 / Vector3.Distance(Camera.current.transform.position, position);
+        size = Mathf.Clamp(size, _buttonMinSize, _buttonMaxSize);
+
+        var r = new Rect(p.x - size / 2, Screen.height - p.y - size, size, size / 2);
+
+        var dirTest = new Vector3(position.x, 0, position.z) - new Vector3(_target.transform.position.x, 0, _target.transform.position.z);
+
+        dirTest = dirTest.normalized;
+
+        var posArray = new Vector3[] { _target.transform.forward, -_target.transform.forward, _target.transform.right, -_target.transform.right };
+
+        var disArray = posArray.OrderBy(x => Vector3.Distance(x, dirTest));
+
+        dirTest = disArray.First();
+
+        Direction dir;
+
+        if (GUI.Button(r, text))
+        {
+            if (dirTest.x >= 1)
+                dir = Direction.Right;
+            else if (dirTest.x <= -1)
+                dir = Direction.Left;
+            else if (dirTest.z >= 1)
+                dir = Direction.Forward;
+            else
+                dir = Direction.Backward;
+
+            CreatePath(_target.transform.position + dirTest, dir);
+        }
+
         //var p = Camera.current.WorldToScreenPoint(position);
         //var size = 700 / Vector3.Distance(Camera.current.transform.position, position);
         //var r = new Rect(p.x - size/2, Screen.height - p.y - size, size, size/2);
@@ -313,4 +357,11 @@ public class SeedEditor : Editor
         Left,
         Right
     }
+
+    public enum ButtonType
+    {
+        Add,
+        ChangeType
+    }
+
 }
