@@ -11,17 +11,20 @@ public class WindowLoadMaps : EditorWindow
     public float maxYSize = 500;
     public float maxXSize = 500;
     public PathConfig pathsSaved;
+    private Seed _seed;
 
     [MenuItem("Level options/Load maps")]
     static void CreateWindow()
     {
         var window = ((WindowLoadMaps)GetWindow(typeof(WindowLoadMaps)));
         window.Show();
-        window.Init();
+        window.Init();        
     }
 
     public void Init()
     {
+        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>(); 
+
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
 
         maxSize = new Vector2(maxXSize, maxYSize);
@@ -36,7 +39,7 @@ public class WindowLoadMaps : EditorWindow
     }
 
     public void LoadMaps()
-    {
+    {       
         List<string> tempPath = new List<string>();
 
         var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
@@ -94,6 +97,15 @@ public class WindowLoadMaps : EditorWindow
 
     public void LoadMapOnScene(MapsSaved map)
     {
+        foreach (var item in pathsSaved.paths)
+        {
+            DestroyImmediate(item);
+        }
+
+        pathsSaved.paths.Clear();
+        pathsSaved.objectType.Clear();
+        pathsSaved.positions.Clear();
+
         int count = map.paths.Count;
 
         for (int i = 0; i < count; i++)
@@ -107,8 +119,10 @@ public class WindowLoadMaps : EditorWindow
             pathsSaved.paths.Add(path);
             pathsSaved.objectType.Add(map.objectType[i]);
             pathsSaved.positions.Add(path.transform.position);
-        }        
-        
+        }
+
+        _seed.transform.position = map.positions[count-1];
+
     }
 
     void OnGUI()

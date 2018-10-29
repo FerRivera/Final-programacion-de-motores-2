@@ -91,13 +91,13 @@ public class SeedEditor : Editor
     void ShowPreview()
     {
         var _preview = AssetPreview.GetAssetPreview(pathsSaved.objectsToInstantiate[_target.selectedIndex]);
+
         if (_preview != null)
-        {
-            Repaint();
+        {            
             GUILayout.BeginHorizontal();
             GUI.DrawTexture(GUILayoutUtility.GetRect(150, 150, 150, 150), _preview, ScaleMode.ScaleToFit);
             GUILayout.Label(pathsSaved.objectsToInstantiate[_target.selectedIndex].name);
-            GUILayout.Label(AssetDatabase.GetAssetPath(pathsSaved.objectsToInstantiate[_target.selectedIndex]));
+            GUILayout.Label(AssetDatabase.GetAssetPath(pathsSaved.objectsToInstantiate[_target.selectedIndex]));            
             GUILayout.EndHorizontal();
         }
     }
