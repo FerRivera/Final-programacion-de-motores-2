@@ -60,8 +60,10 @@ public class WindowLoadMaps : EditorWindow
             //si el nombre que obtuve con el que escribi son iguales entonces uso ese scriptable object
             
             EditorGUI.BeginDisabledGroup(true);
-            currentMapName[0] = EditorGUILayout.TextField("Map name", currentMapName[0]);            
+            currentMapName[0] = EditorGUILayout.TextField("Map name", currentMapName[0]);
             EditorGUI.EndDisabledGroup();
+
+            _seed.mapNameLoaded = currentMapName[0];
 
             if (!wantToDeleteList[i])
             {
@@ -122,6 +124,7 @@ public class WindowLoadMaps : EditorWindow
         }
 
         _seed.transform.position = map.positions[count-1];
+        _seed.mapLoaded = true;
 
     }
 

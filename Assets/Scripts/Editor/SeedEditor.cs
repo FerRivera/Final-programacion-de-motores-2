@@ -24,6 +24,7 @@ public class SeedEditor : Editor
     public PathConfig pathsSaved;
 
     public bool restartMap = false;
+    public bool saveMap = false;
 
     void OnEnable()
     {
@@ -76,6 +77,7 @@ public class SeedEditor : Editor
         DrawButton("+", _target.transform.position + Camera.current.transform.right * addValue, ButtonType.Add);
         DrawButton("+", _target.transform.position - Camera.current.transform.right * addValue, ButtonType.Add);
 
+        SaveMap();
         Handles.EndGUI();
     }
 
@@ -93,11 +95,11 @@ public class SeedEditor : Editor
         var _preview = AssetPreview.GetAssetPreview(pathsSaved.objectsToInstantiate[_target.selectedIndex]);
 
         if (_preview != null)
-        {            
+        {
             GUILayout.BeginHorizontal();
             GUI.DrawTexture(GUILayoutUtility.GetRect(150, 150, 150, 150), _preview, ScaleMode.ScaleToFit);
             GUILayout.Label(pathsSaved.objectsToInstantiate[_target.selectedIndex].name);
-            GUILayout.Label(AssetDatabase.GetAssetPath(pathsSaved.objectsToInstantiate[_target.selectedIndex]));            
+            GUILayout.Label(AssetDatabase.GetAssetPath(pathsSaved.objectsToInstantiate[_target.selectedIndex]));
             GUILayout.EndHorizontal();
         }
     }
@@ -128,6 +130,7 @@ public class SeedEditor : Editor
             _target.transform.position = new Vector3(0, 0, 0);
 
             restartMap = false;
+            _target.mapLoaded = false;
         }
     }
 
@@ -246,6 +249,59 @@ public class SeedEditor : Editor
         pathsSaved.paths.Add(path);
         pathsSaved.objectType.Add(_target.selectedIndex);
         pathsSaved.positions.Add(path.transform.position);
+    }
+
+    public void SaveMap()
+    {
+        if (_target.mapLoaded)
+        {
+            if (!saveMap && GUI.Button(new Rect(20, 100, buttonWidth, buttonHeight), "Save Map"))
+            {
+                saveMap = true;
+            }
+
+            if (saveMap && GUI.Button(new Rect(20, 100, buttonWidth, buttonHeight), "No"))
+            {
+                saveMap = false;
+            }
+            if (saveMap && GUI.Button(new Rect(160, 100, buttonWidth, buttonHeight), "Yes"))
+            {
+                List<string> tempPath = new List<string>();
+
+                var asset = AssetDatabase.FindAssets("t:MapsSaved", null);
+
+                MapsSaved currentMap = null;
+
+                for (int i = asset.Length - 1; i >= 0; i--)
+                {
+                    //obtengo todo el path
+                    string path = AssetDatabase.GUIDToAssetPath(asset[i]);
+                    //separo las diferentes carpetas por el carcater /
+                    tempPath = path.Split('/').ToList();
+                    //obtengo la ultima parte, que seria el nombre con la extension y saco la extension
+                    var currentMapName = tempPath.LastOrDefault().Split('.');
+                    //si el nombre que obtuve con el que escribi son iguales entonces uso ese scriptable object
+                    if (currentMapName[0] == _target.mapNameLoaded)
+                    {
+                        currentMap = AssetDatabase.LoadAssetAtPath<MapsSaved>(path);
+                        break;
+                    }
+                }
+
+                if (currentMap != null)
+                {
+                    currentMap.paths.Clear();
+                    currentMap.objectType.Clear();
+                    currentMap.positions.Clear();
+
+                    currentMap.paths.AddRange(pathsSaved.paths);
+                    currentMap.objectType.AddRange(pathsSaved.objectType);
+                    currentMap.positions.AddRange(pathsSaved.positions);
+
+                    saveMap = false;
+                }
+            }
+        }
     }
 
     Vector3 GetNextMove(GameObject go, Direction direction)
