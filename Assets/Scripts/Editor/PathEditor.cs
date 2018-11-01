@@ -85,7 +85,22 @@ public class PathEditor : Editor
         if (GUI.Button(new Rect(20, 30, 130, 30), "Bring seed"))
         {
             _seed.transform.position = _target.transform.position;
+            Swap(pathsSaved.paths, _target.id, pathsSaved.paths.Count-1);
+            Swap(pathsSaved.positions, _target.id, pathsSaved.positions.Count-1);
+            Swap(pathsSaved.objectType, _target.id, pathsSaved.objectType.Count-1);
+
+            int tempID = _target.id;
+
+            _target.id = pathsSaved.paths.LastOrDefault().GetComponent<Path>().id;
+            pathsSaved.paths.LastOrDefault().GetComponent<Path>().id = tempID;
         }
+    }
+
+    public void Swap<T>(IList<T> list, int itemToMove, int placeLast)
+    {
+        T tmp = list[itemToMove];
+        list[itemToMove] = list[placeLast];
+        list[placeLast] = tmp;
     }
 
     private void FixValues()
