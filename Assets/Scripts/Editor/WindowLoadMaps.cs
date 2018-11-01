@@ -23,7 +23,7 @@ public class WindowLoadMaps : EditorWindow
 
     public void Init()
     {
-        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>(); 
+        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>();
 
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
 

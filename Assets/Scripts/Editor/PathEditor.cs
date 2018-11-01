@@ -11,9 +11,13 @@ public class PathEditor : Editor
 
     public PathConfig pathsSaved;
 
+    private Seed _seed;
+
     void OnEnable()
     {
         _target = (Path)target;
+
+        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>();
     }
 
     public override void OnInspectorGUI()
@@ -25,6 +29,15 @@ public class PathEditor : Editor
         Repaint();
     }
 
+    void OnSceneGUI()
+    {
+        Handles.BeginGUI();
+
+        SetAsActualPath();
+
+        Handles.EndGUI();
+    }
+
     private void ShowValues()
     {
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
@@ -32,7 +45,7 @@ public class PathEditor : Editor
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
 
         SwitchType();
-
+        
         //ConfigurateObjects();
 
         //_target.selectedIndex = EditorGUILayout.Popup("Path to create", _target.selectedIndex, _target.mapItems.Select(x => x.name).ToArray());
@@ -64,6 +77,14 @@ public class PathEditor : Editor
             pathsSaved.positions.Insert(_target.id, path.transform.position);
             //pathsSaved.paths.Add(path);
             Selection.activeObject = path;
+        }
+    }
+
+    void SetAsActualPath()
+    {
+        if (GUI.Button(new Rect(20, 30, 130, 30), "Bring seed"))
+        {
+            _seed.transform.position = _target.transform.position;
         }
     }
 

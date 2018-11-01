@@ -8,8 +8,4 @@ public class ScriptableObjectsCreator
     {
         ScriptableObjectUtility.CreateAsset<PathConfig>("Resources/PathConfig");
     }
-    //public static void CreateMapSave(string path)
-    //{
-    //    ScriptableObjectUtility.CreateAsset<MapsSaved>(path);
-    //}
 }

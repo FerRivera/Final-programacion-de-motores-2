@@ -14,12 +14,9 @@ public class SeedEditor : Editor
 
     public float buttonWidth = 130;
     public float buttonHeight = 30;
-    public float buttonPlusWidth = 30;
 
     int _buttonMinSize = 45;
     int _buttonMaxSize = 70;
-
-    public List<GameObject> buttonsPosition = new List<GameObject>();
 
     public PathConfig pathsSaved;
 
@@ -57,7 +54,7 @@ public class SeedEditor : Editor
 
     private void FixValues()
     {
-
+        
     }   
 
     void OnSceneGUI()
@@ -156,24 +153,6 @@ public class SeedEditor : Editor
                 _target.transform.position = new Vector3(0, 0, 0);
             }
         }
-    }
-
-    //de esta forma los botones se escalan bien pero rotan junto con la camara
-    public Vector3 CheckDistance(Vector3 pos)
-    {
-        Vector3 temp = new Vector3(Mathf.Infinity,Mathf.Infinity);
-        float floatTemp = Mathf.Infinity; 
-
-        foreach (var item in buttonsPosition)
-        {
-            if (Vector3.Distance(item.transform.position, temp) < floatTemp)
-            {
-                Handles.DrawLine(item.transform.position, temp);
-                floatTemp = Vector3.Distance(item.transform.position, temp);
-                temp = item.transform.position;
-            }
-        }
-        return temp;        
     }
 
     // como limitar el tamaño de los botones? tengo que hacer scripts aparte e instanciar esos scripts como botones y limitar su max size desde ahi?
@@ -298,6 +277,8 @@ public class SeedEditor : Editor
                     currentMap.objectType.AddRange(pathsSaved.objectType);
                     currentMap.positions.AddRange(pathsSaved.positions);
 
+                    //esto hace que cuando cierro unity y lo vuelvo a abrir no se pierda la info
+                    EditorUtility.SetDirty(currentMap);
                     saveMap = false;
                 }
             }

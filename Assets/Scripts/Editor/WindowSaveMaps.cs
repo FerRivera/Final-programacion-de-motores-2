@@ -84,6 +84,9 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
                             currentMap.paths.AddRange(pathsSaved.paths);
                             currentMap.objectType.AddRange(pathsSaved.objectType);
                             currentMap.positions.AddRange(pathsSaved.positions);
+
+                            //esto hace que cuando cierro unity y lo vuelvo a abrir no se pierda la info
+                            EditorUtility.SetDirty(currentMap);
                         }
                     }
                 }
