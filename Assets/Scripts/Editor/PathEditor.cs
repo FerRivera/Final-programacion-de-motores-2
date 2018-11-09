@@ -13,6 +13,10 @@ public class PathEditor : Editor
 
     private Seed _seed;
 
+    int _buttonMinSize = 45;
+    int _buttonMaxSize = 70;
+    int _angleToRotate;
+
     void OnEnable()
     {
         _target = (Path)target;
@@ -31,18 +35,56 @@ public class PathEditor : Editor
 
     void OnSceneGUI()
     {
-        Handles.BeginGUI();
+        Handles.BeginGUI();        
 
         SetAsActualPath();
+
+        if(pathsSaved != null)
+            pathsSaved.angleToRotate = EditorGUILayout.IntField("Angle to rotate", pathsSaved.angleToRotate, GUILayout.Width(300));
+
+        var addValue = 30 / Vector3.Distance(Camera.current.transform.position, _target.transform.position);
+
+        DrawButton("↻", _target.transform.position + Camera.current.transform.up * addValue ,Direction.Left);
+        DrawButton("↺", _target.transform.position - Camera.current.transform.up * addValue ,Direction.Right);
 
         Handles.EndGUI();
     }
 
+    private void DrawButton(string text, Vector3 position , Direction dir)
+    {
+        var p = Camera.current.WorldToScreenPoint(position);
+
+        var size = 700 / Vector3.Distance(Camera.current.transform.position, position);
+        size = Mathf.Clamp(size, _buttonMinSize, _buttonMaxSize);
+
+        var r = new Rect(p.x - size / 2, Screen.height - p.y - size, size, size / 2);
+
+        var dirTest = new Vector3(position.x, 0, position.z) - new Vector3(_target.transform.position.x, 0, _target.transform.position.z);
+
+        dirTest = dirTest.normalized;
+
+        var posArray = new Vector3[] { _target.transform.forward, -_target.transform.forward, _target.transform.right, -_target.transform.right };
+
+        var disArray = posArray.OrderBy(x => Vector3.Distance(x, dirTest));
+
+        dirTest = disArray.First();
+
+        if (GUI.Button(r, text))
+        {            
+            if (dir == Direction.Left)            
+                _target.transform.Rotate(new Vector3(0, pathsSaved.angleToRotate, 0));            
+            else
+                _target.transform.Rotate(new Vector3(0,-pathsSaved.angleToRotate, 0));
+        }
+
+    }
     private void ShowValues()
     {
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
 
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
+
+        _target.id = EditorGUILayout.IntField(_target.id);
 
         SwitchType();
         
@@ -82,7 +124,7 @@ public class PathEditor : Editor
 
     void SetAsActualPath()
     {
-        if (GUI.Button(new Rect(20, 30, 130, 30), "Bring seed"))
+        if (GUI.Button(new Rect(20, 50, 130, 30), "Bring seed"))
         {
             _seed.transform.position = _target.transform.position;
             Swap(pathsSaved.paths, _target.id, pathsSaved.paths.Count-1);
@@ -93,6 +135,8 @@ public class PathEditor : Editor
 
             _target.id = pathsSaved.paths.LastOrDefault().GetComponent<Path>().id;
             pathsSaved.paths.LastOrDefault().GetComponent<Path>().id = tempID;
+
+            Selection.activeGameObject = _seed.gameObject;
         }
     }
 

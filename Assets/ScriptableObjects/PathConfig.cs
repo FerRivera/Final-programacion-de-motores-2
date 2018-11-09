@@ -8,4 +8,5 @@ public class PathConfig : ScriptableObject
     public List<Vector3> positions = new List<Vector3>();
     public List<int> objectType = new List<int>();
     public List<Object> objectsToInstantiate = new List<Object>();
+    public int angleToRotate;
 }

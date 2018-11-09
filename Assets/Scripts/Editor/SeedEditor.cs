@@ -63,16 +63,14 @@ public class SeedEditor : Editor
 
         var addValue = 30 / Vector3.Distance(Camera.current.transform.position, _target.transform.position);
 
-        var screenPos = Camera.current.WorldToScreenPoint(_target.transform.position);
-
         RestartMap();
 
         DeleteLastPath();
 
-        DrawButton("+", _target.transform.position + Camera.current.transform.up * addValue, ButtonType.Add);
-        DrawButton("+", _target.transform.position - Camera.current.transform.up * addValue, ButtonType.Add);
-        DrawButton("+", _target.transform.position + Camera.current.transform.right * addValue, ButtonType.Add);
-        DrawButton("+", _target.transform.position - Camera.current.transform.right * addValue, ButtonType.Add);
+        DrawButton("+", _target.transform.position + Camera.current.transform.up * addValue);
+        DrawButton("+", _target.transform.position - Camera.current.transform.up * addValue);
+        DrawButton("+", _target.transform.position + Camera.current.transform.right * addValue);
+        DrawButton("+", _target.transform.position - Camera.current.transform.right * addValue);
 
         SaveMap();
         Handles.EndGUI();
@@ -156,7 +154,7 @@ public class SeedEditor : Editor
     }
 
     // como limitar el tamaño de los botones? tengo que hacer scripts aparte e instanciar esos scripts como botones y limitar su max size desde ahi?
-    private void DrawButton(string text, Vector3 position, ButtonType typ)
+    private void DrawButton(string text, Vector3 position)
     {
         var p = Camera.current.WorldToScreenPoint(position);
 
@@ -327,20 +325,20 @@ public class SeedEditor : Editor
         }
 
         return default(Vector3);
-    }
+    }    
 
-    public enum Direction
-    {
-        Forward,
-        Backward,
-        Left,
-        Right
-    }
+}
 
-    public enum ButtonType
-    {
-        Add,
-        ChangeType
-    }
+public enum Direction
+{
+    Forward,
+    Backward,
+    Left,
+    Right
+}
 
+public enum ButtonType
+{
+    Add,
+    ChangeType
 }
