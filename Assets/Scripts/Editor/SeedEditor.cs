@@ -210,12 +210,12 @@ public class SeedEditor : Editor
             var temp = path.GetComponent<Path>();
             temp.currentIndex = _target.selectedIndex;
             temp.id = pathsSaved.paths.Count;
-        }            
+        }
 
         if (pathsSaved.paths.Count > 0)
             lastObject = pathsSaved.paths[pathsSaved.paths.Count - 1];
         else
-            lastObject = path;        
+            lastObject = path;
 
         _target.transform.position = GetNextMove(lastObject, direction);
 

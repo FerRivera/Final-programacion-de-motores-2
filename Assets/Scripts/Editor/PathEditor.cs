@@ -19,9 +19,7 @@ public class PathEditor : Editor
 
     void OnEnable()
     {
-        _target = (Path)target;
-
-        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>();
+        _target = (Path)target;        
     }
 
     public override void OnInspectorGUI()
@@ -82,9 +80,11 @@ public class PathEditor : Editor
     {
         pathsSaved = (PathConfig)Resources.Load("PathConfig");
 
+        _seed = GameObject.FindGameObjectWithTag("Seed").GetComponent<Seed>();
+
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
 
-        _target.id = EditorGUILayout.IntField(_target.id);
+        _target.id = EditorGUILayout.IntField("ID",_target.id);
 
         SwitchType();
         
@@ -126,15 +126,18 @@ public class PathEditor : Editor
     {
         if (GUI.Button(new Rect(20, 50, 130, 30), "Bring seed"))
         {
+            //int tempID = _target.id;
+            //int lastID = pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id;
+
+            pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id = _target.id;
+
             _seed.transform.position = _target.transform.position;
             Swap(pathsSaved.paths, _target.id, pathsSaved.paths.Count-1);
             Swap(pathsSaved.positions, _target.id, pathsSaved.positions.Count-1);
             Swap(pathsSaved.objectType, _target.id, pathsSaved.objectType.Count-1);
 
-            int tempID = _target.id;
-
-            _target.id = pathsSaved.paths.LastOrDefault().GetComponent<Path>().id;
-            pathsSaved.paths.LastOrDefault().GetComponent<Path>().id = tempID;
+            _target.id = pathsSaved.paths.Count;
+            //pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id = tempID;
 
             Selection.activeGameObject = _seed.gameObject;
         }
@@ -146,6 +149,13 @@ public class PathEditor : Editor
         list[itemToMove] = list[placeLast];
         list[placeLast] = tmp;
     }
+
+    //public void SwapGOList(List<GameObject> list, int itemToMove, int placeLast)
+    //{
+    //    GameObject tmp = list[itemToMove];
+    //    list[itemToMove] = list[placeLast];
+    //    list[placeLast] = tmp;
+    //}
 
     private void FixValues()
     {
