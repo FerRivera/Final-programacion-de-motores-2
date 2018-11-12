@@ -16,7 +16,7 @@ public class WindowSaveMaps : EditorWindow // Tiene que heredar de Editor Window
     private int click;
     public PathConfig pathsSaved;
 
-    [MenuItem("Level options/Save map")] // La ubicación dentro del editor de Unity
+    [MenuItem("Level options/Save new map")] // La ubicación dentro del editor de Unity
     static void CreateWindow() // Crea la ventana a mostrar
     {
         var window = ((WindowSaveMaps)GetWindow(typeof(WindowSaveMaps))); //Esta línea va a obtener la ventana o a crearla. Una vez que haga esto, va a mostrarla.

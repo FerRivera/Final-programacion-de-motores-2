@@ -13,7 +13,7 @@ public class WindowLoadMaps : EditorWindow
     public PathConfig pathsSaved;
     private Seed _seed;
 
-    [MenuItem("Level options/Load maps")]
+    [MenuItem("Level options/Load map")]
     static void CreateWindow()
     {
         var window = ((WindowLoadMaps)GetWindow(typeof(WindowLoadMaps)));

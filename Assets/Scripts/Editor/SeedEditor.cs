@@ -153,7 +153,6 @@ public class SeedEditor : Editor
         }
     }
 
-    // como limitar el tamaño de los botones? tengo que hacer scripts aparte e instanciar esos scripts como botones y limitar su max size desde ahi?
     private void DrawButton(string text, Vector3 position)
     {
         var p = Camera.current.WorldToScreenPoint(position);

@@ -84,23 +84,15 @@ public class PathEditor : Editor
 
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
 
-        _target.id = EditorGUILayout.IntField("ID",_target.id);
+        _target.id = EditorGUILayout.IntField("ID", _target.id);
 
         SwitchType();
-        
-        //ConfigurateObjects();
-
-        //_target.selectedIndex = EditorGUILayout.Popup("Path to create", _target.selectedIndex, _target.mapItems.Select(x => x.name).ToArray());
-
-        //ShowPreview();
     }
 
     void SwitchType()
     {
         if(_target.lastIndex != _target.currentIndex)
-        {
-            //_target.lastIndex = _target.currentIndex;
-            
+        {            
             GameObject path = (GameObject)Instantiate(pathsSaved.objectsToInstantiate[_target.currentIndex]);
             path.transform.position = pathsSaved.paths[_target.id].transform.position;
 
@@ -117,7 +109,7 @@ public class PathEditor : Editor
             pathsSaved.paths.Insert(_target.id, path);
             pathsSaved.objectType.Insert(_target.id, path.GetComponent<Path>().currentIndex);
             pathsSaved.positions.Insert(_target.id, path.transform.position);
-            //pathsSaved.paths.Add(path);
+
             Selection.activeObject = path;
         }
     }
@@ -126,9 +118,6 @@ public class PathEditor : Editor
     {
         if (GUI.Button(new Rect(20, 50, 130, 30), "Bring seed"))
         {
-            //int tempID = _target.id;
-            //int lastID = pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id;
-
             pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id = _target.id;
 
             _seed.transform.position = _target.transform.position;
@@ -136,8 +125,7 @@ public class PathEditor : Editor
             Swap(pathsSaved.positions, _target.id, pathsSaved.positions.Count-1);
             Swap(pathsSaved.objectType, _target.id, pathsSaved.objectType.Count-1);
 
-            _target.id = pathsSaved.paths.Count;
-            //pathsSaved.paths[pathsSaved.paths.Count - 1].GetComponent<Path>().id = tempID;
+            _target.id = pathsSaved.paths.Count-1;
 
             Selection.activeGameObject = _seed.gameObject;
         }
@@ -149,13 +137,6 @@ public class PathEditor : Editor
         list[itemToMove] = list[placeLast];
         list[placeLast] = tmp;
     }
-
-    //public void SwapGOList(List<GameObject> list, int itemToMove, int placeLast)
-    //{
-    //    GameObject tmp = list[itemToMove];
-    //    list[itemToMove] = list[placeLast];
-    //    list[placeLast] = tmp;
-    //}
 
     private void FixValues()
     {
