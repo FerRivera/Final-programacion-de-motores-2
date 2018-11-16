@@ -84,7 +84,7 @@ public class PathEditor : Editor
 
         _target.currentIndex = EditorGUILayout.Popup("Path to create", _target.currentIndex, pathsSaved.objectsToInstantiate.Select(x => x.name).ToArray());
 
-        _target.id = EditorGUILayout.IntField("ID", _target.id);
+        //_target.id = EditorGUILayout.IntField("ID", _target.id);
 
         SwitchType();
     }
