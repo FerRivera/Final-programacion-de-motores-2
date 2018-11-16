@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEditorInternal;
 
 public class WindowVessels : EditorWindow
 {
-    int _selectedIndex;
+    //int _selectedIndex;
     List<Object> _objects = new List<Object>();
-    float _distance;
-    LayerMask _vessels;
-    LayerMask _map;
+    //float _distance;
+    //LayerMask _vessels;
+    //LayerMask _map;
+    VesselsSaved _vesselsSaved;
+
+    List<string> layers;
+    string[] layerNames;
 
     [MenuItem("Level options/Create Vessels")]
     static void CreateWindow()
@@ -22,29 +27,79 @@ public class WindowVessels : EditorWindow
 
     public void Init()
     {
-        _objects = Resources.LoadAll("Vessels", typeof(GameObject)).ToList();        
+        _objects = Resources.LoadAll("Vessels", typeof(GameObject)).ToList();
+        _vesselsSaved = (VesselsSaved)Resources.Load("VesselsConfig");
     }
 
     void OnGUI()
     {
-        _selectedIndex = EditorGUILayout.Popup("Vessel to create", _selectedIndex, _objects.Select(x => x.name).ToArray());
+        _vesselsSaved.selectedIndex = EditorGUILayout.Popup("Vessel to create", _vesselsSaved.selectedIndex, _objects.Select(x => x.name).ToArray());
 
-        _distance = EditorGUILayout.FloatField("Distance between vessels", _distance);
+        _vesselsSaved.distance = EditorGUILayout.FloatField("Distance between vessels", _vesselsSaved.distance);
 
-        _vessels = EditorGUILayout.LayerField("Vessel layer",_vessels.value);
+        //_vesselsSaved.vessels = EditorGUILayout.MaskField(InternalEditorUtility.LayerMaskToConcatenatedLayersMask(myLayerMask), InternalEditorUtility.layers);
 
-        _map = EditorGUILayout.LayerField("Map layer", _map.value);
+        //_vesselsSaved.vessels.value = EditorGUILayout.MaskField("Vessels layer",_vesselsSaved.vessels.value, InternalEditorUtility.layers);
 
-        var _preview = AssetPreview.GetAssetPreview(_objects[_selectedIndex]);
+        _vesselsSaved.vessels = LayerMaskField("Vessels layer", _vesselsSaved.vessels.value);
+
+        _vesselsSaved.map = LayerMaskField("Map layer", _vesselsSaved.map.value);
+
+        //_vesselsSaved.map.value = EditorGUILayout.MaskField("Map layer", _vesselsSaved.map.value, InternalEditorUtility.layers);
+
+        //_vesselsSaved.map = EditorGUILayout.LayerField("Map layer", _vesselsSaved.map.value);
+
+        var _preview = AssetPreview.GetAssetPreview(_objects[_vesselsSaved.selectedIndex]);
 
         if (_preview != null)
         {
             GUILayout.BeginHorizontal();
             GUI.DrawTexture(GUILayoutUtility.GetRect(150, 150, 150, 150), _preview, ScaleMode.ScaleToFit);
-            GUILayout.Label(_objects[_selectedIndex].name);
-            GUILayout.Label(AssetDatabase.GetAssetPath(_objects[_selectedIndex]));
+            GUILayout.Label(_objects[_vesselsSaved.selectedIndex].name);
+            GUILayout.Label(AssetDatabase.GetAssetPath(_objects[_vesselsSaved.selectedIndex]));
             GUILayout.EndHorizontal();
         }        
+    }
+
+    public LayerMask LayerMaskField(string label, LayerMask selected)
+    {
+
+        if (layers == null)
+        {
+            layers = new List<string>();
+            layerNames = new string[4];
+        }
+        else
+        {
+            layers.Clear();
+        }
+
+        int emptyLayers = 0;
+        for (int i = 0; i < 32; i++)
+        {
+            string layerName = LayerMask.LayerToName(i);
+
+            if (layerName != "")
+            {
+
+                for (; emptyLayers > 0; emptyLayers--) layers.Add("Layer " + (i - emptyLayers));
+                layers.Add(layerName);
+            }
+            else
+            {
+                emptyLayers++;
+            }
+        }
+
+        if (layerNames.Length != layers.Count)
+        {
+            layerNames = new string[layers.Count];
+        }
+        for (int i = 0; i < layerNames.Length; i++) layerNames[i] = layers[i];
+
+        selected.value = EditorGUILayout.MaskField(label, selected.value, layerNames);
+
+        return selected;
     }
 
     void CreateVessel()
@@ -55,13 +110,13 @@ public class WindowVessels : EditorWindow
         RaycastHit MousePosHit;
         Ray MouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(MouseRay, out MousePosHit, float.MaxValue, _map.value))
+        if (Physics.Raycast(MouseRay, out MousePosHit, float.MaxValue, _vesselsSaved.map))
         {            
             var dir = MousePosHit.point + (Camera.main.transform.position - MousePosHit.point).normalized;
 
-            if (!CloserVessels(dir, _distance))
+            if (!CloserVessels(dir, _vesselsSaved.distance))
             {
-                GameObject path = (GameObject)Instantiate(_objects[_selectedIndex]);
+                GameObject path = (GameObject)Instantiate(_objects[_vesselsSaved.selectedIndex]);
 
                 if (path.GetComponent<Vessels>() == null)
                     path.AddComponent<Vessels>();
@@ -76,7 +131,7 @@ public class WindowVessels : EditorWindow
 
     bool CloserVessels(Vector3 position,float radius)
     {
-        var temp = Physics.OverlapSphere(position, radius, 1 << _vessels.value);
+        var temp = Physics.OverlapSphere(position, radius, _vesselsSaved.vessels);
 
         if (temp.Count() > 0)
             return true;

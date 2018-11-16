@@ -30,6 +30,9 @@ public class SeedEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        //if (Application.isPlaying)
+        //    return;
+
         //Primero mostramos los valores
         ShowValues();
 
@@ -59,6 +62,9 @@ public class SeedEditor : Editor
 
     void OnSceneGUI()
     {
+        if (Application.isPlaying)
+            return;
+
         Handles.BeginGUI();
 
         var addValue = 30 / Vector3.Distance(Camera.current.transform.position, _target.transform.position);
@@ -101,7 +107,6 @@ public class SeedEditor : Editor
 
     void RestartMap()
     {
-
         if (!restartMap && GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "Restart Map"))
         {
             restartMap = true;
@@ -113,6 +118,9 @@ public class SeedEditor : Editor
         }
         if (restartMap && GUI.Button(new Rect(160, 20, buttonWidth, buttonHeight), "Yes"))
         {
+            if (pathsSaved == null || pathsSaved.paths == null)
+                return;
+
             foreach (var item in pathsSaved.paths)
             {
                 DestroyImmediate(item);

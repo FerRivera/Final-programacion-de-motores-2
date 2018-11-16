@@ -24,6 +24,9 @@ public class PathEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        //if (Application.isPlaying)
+        //     return;
+
         ShowValues();
 
         FixValues();
@@ -33,6 +36,9 @@ public class PathEditor : Editor
 
     void OnSceneGUI()
     {
+        if (Application.isPlaying)
+            return;
+
         Handles.BeginGUI();        
 
         SetAsActualPath();
