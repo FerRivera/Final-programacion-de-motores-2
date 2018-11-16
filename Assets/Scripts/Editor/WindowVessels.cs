@@ -8,8 +8,9 @@ public class WindowVessels : EditorWindow
 {
     int _selectedIndex;
     List<Object> _objects = new List<Object>();
-    int _distance;
+    float _distance;
     LayerMask _vessels;
+    LayerMask _map;
 
     [MenuItem("Level options/Create Vessels")]
     static void CreateWindow()
@@ -28,9 +29,11 @@ public class WindowVessels : EditorWindow
     {
         _selectedIndex = EditorGUILayout.Popup("Vessel to create", _selectedIndex, _objects.Select(x => x.name).ToArray());
 
-        _distance = EditorGUILayout.IntField("Min distance between vessels", _distance);
+        _distance = EditorGUILayout.FloatField("Distance between vessels", _distance);
 
         _vessels = EditorGUILayout.LayerField("Vessel layer",_vessels.value);
+
+        _map = EditorGUILayout.LayerField("Map layer", _map.value);
 
         var _preview = AssetPreview.GetAssetPreview(_objects[_selectedIndex]);
 
@@ -52,7 +55,7 @@ public class WindowVessels : EditorWindow
         RaycastHit MousePosHit;
         Ray MouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(MouseRay, out MousePosHit, float.MaxValue))
+        if (Physics.Raycast(MouseRay, out MousePosHit, float.MaxValue, _map.value))
         {            
             var dir = MousePosHit.point + (Camera.main.transform.position - MousePosHit.point).normalized;
 
@@ -73,7 +76,7 @@ public class WindowVessels : EditorWindow
 
     bool CloserVessels(Vector3 position,float radius)
     {
-        var temp = Physics.OverlapSphere(position, radius, _vessels.value);
+        var temp = Physics.OverlapSphere(position, radius, 1 << _vessels.value);
 
         if (temp.Count() > 0)
             return true;
@@ -112,9 +115,4 @@ public class WindowVessels : EditorWindow
     {
         CreateVessel();
     }
-}
-
-public enum Layers
-{
-    Vessels = 8
 }
