@@ -23,6 +23,8 @@ public class SeedEditor : Editor
     public bool restartMap = false;
     public bool saveMap = false;
 
+    public static bool vesselsWindowOpened;
+
     void OnEnable()
     {
         _target = (Seed)target;
@@ -107,8 +109,15 @@ public class SeedEditor : Editor
 
     void RestartMap()
     {
+        
+
         if (!restartMap && GUI.Button(new Rect(20, 20, buttonWidth, buttonHeight), "Restart Map"))
         {
+            if (vesselsWindowOpened || pathsSaved == null || pathsSaved.paths == null)
+            {
+                throw new Exception("Change the focus from Vessels window to another to restart the map");
+            }
+                
             restartMap = true;
         }
 
@@ -118,9 +127,6 @@ public class SeedEditor : Editor
         }
         if (restartMap && GUI.Button(new Rect(160, 20, buttonWidth, buttonHeight), "Yes"))
         {
-            if (pathsSaved == null || pathsSaved.paths == null)
-                return;
-
             foreach (var item in pathsSaved.paths)
             {
                 DestroyImmediate(item);

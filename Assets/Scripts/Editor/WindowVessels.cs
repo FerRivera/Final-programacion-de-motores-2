@@ -7,11 +7,7 @@ using UnityEditorInternal;
 
 public class WindowVessels : EditorWindow
 {
-    //int _selectedIndex;
     List<Object> _objects = new List<Object>();
-    //float _distance;
-    //LayerMask _vessels;
-    //LayerMask _map;
     VesselsSaved _vesselsSaved;
 
     List<string> layers;
@@ -37,17 +33,9 @@ public class WindowVessels : EditorWindow
 
         _vesselsSaved.distance = EditorGUILayout.FloatField("Distance between vessels", _vesselsSaved.distance);
 
-        //_vesselsSaved.vessels = EditorGUILayout.MaskField(InternalEditorUtility.LayerMaskToConcatenatedLayersMask(myLayerMask), InternalEditorUtility.layers);
-
-        //_vesselsSaved.vessels.value = EditorGUILayout.MaskField("Vessels layer",_vesselsSaved.vessels.value, InternalEditorUtility.layers);
-
         _vesselsSaved.vessels = LayerMaskField("Vessels layer", _vesselsSaved.vessels.value);
 
         _vesselsSaved.map = LayerMaskField("Map layer", _vesselsSaved.map.value);
-
-        //_vesselsSaved.map.value = EditorGUILayout.MaskField("Map layer", _vesselsSaved.map.value, InternalEditorUtility.layers);
-
-        //_vesselsSaved.map = EditorGUILayout.LayerField("Map layer", _vesselsSaved.map.value);
 
         var _preview = AssetPreview.GetAssetPreview(_objects[_vesselsSaved.selectedIndex]);
 
@@ -140,5 +128,17 @@ public class WindowVessels : EditorWindow
     private void Update()
     {
         CreateVessel();
+    }
+
+    private void OnFocus()
+    {
+        SeedEditor.vesselsWindowOpened = true;
+        Debug.Log("Vessels window focused");
+    }
+
+    private void OnLostFocus()
+    {
+        SeedEditor.vesselsWindowOpened = false;
+        Debug.Log("Vessels window not focused");
     }
 }
