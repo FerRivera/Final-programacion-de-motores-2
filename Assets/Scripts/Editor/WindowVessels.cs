@@ -123,8 +123,6 @@ public class WindowVessels : EditorWindow
 
                 Vector3 pos = new Vector3(dir.x, path.GetComponent<Renderer>().bounds.size.y, dir.z);
                 path.transform.position = pos;
-
-                Debug.Log(pos);
             }            
         }
     }
@@ -137,34 +135,7 @@ public class WindowVessels : EditorWindow
             return true;
 
         return false;
-    }
-    //void CreateVessel()
-    //{
-    //    if (Event.current.type == EventType.MouseDown)
-    //    {
-    //        Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-    //        RaycastHit hit;
-    //        if (Physics.Raycast(ray, out hit))
-    //        {
-    //            Vector3 newTilePosition = hit.point;
-    //            //Vector3 pos = new Vector3(dir.x, 0, dir.z);
-    //            Debug.Log(newTilePosition);
-    //        }
-
-
-    //        //Ray ray = Camera.main.ScreenPointToRay(Event.current.mousePosition);
-    //        //RaycastHit hit = new RaycastHit();
-    //        //if (Physics.Raycast(ray, out hit, float.MaxValue))
-    //        //{
-    //        //    Debug.Log(Event.current.mousePosition);
-    //        //    Vector3 newTilePosition = hit.point;
-    //        //    //Vector3 pos = new Vector3(dir.x, 0, dir.z);
-    //        //    Debug.Log(newTilePosition);
-    //        //    //Instantiate(newTile, newTilePosition, Quaternion.identity);
-    //        //}
-    //    }
-    //}    
+    }  
 
     private void Update()
     {
